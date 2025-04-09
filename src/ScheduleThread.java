@@ -129,8 +129,7 @@ public class ScheduleThread extends Thread {
             elevatorThreads.get(elevatorBId),
             locks.get(elevatorAId),
             locks.get(elevatorBId),
-            updateLock);;
+            updateLock);
         updateThread.start();
-        // todo : 存储双轿厢电梯的服务楼层？
     }
 }

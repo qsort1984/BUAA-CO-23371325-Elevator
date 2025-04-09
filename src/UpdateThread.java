@@ -53,12 +53,14 @@ public class UpdateThread extends Thread {
         TransferFloor transferFloor = new TransferFloor(update.getToFloor());
         synchronized (lockA) {
             elevatorAThread.setUpdateEndSign();
+            elevatorAThread.setTypeA();
             elevatorAThread.setTransferFloor(transferFloor);
             elevatorAThread.setCurrentFloor(update.getToFloor() + 1);
             lockA.notifyAll();
         }
         synchronized (lockB) {
             elevatorBThread.setUpdateEndSign();
+            elevatorBThread.setTypeB();
             elevatorBThread.setTransferFloor(transferFloor);
             elevatorBThread.setCurrentFloor(update.getToFloor() - 1);
             lockB.notifyAll();

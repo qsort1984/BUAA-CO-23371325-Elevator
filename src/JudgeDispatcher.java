@@ -8,13 +8,12 @@ public class JudgeDispatcher implements Dispatcher {
     }
 
     public int dispatchElev(Person person) {
-        // todo 加入双轿厢如何调度
         // todo 调度策略如何优化
         int elevatorId = 1;
         int minSize = 200; //* 乘客最多100人
         for (ElevatorThread elevator : elevatorThreads) {
-            if (!elevator.isScheduling()) {
-                if (elevator.getSize() >= 20) {
+            if (!elevator.isScheduling() && !elevator.isUpdating()) {
+                if (continueSign(person, elevator)) {
                     continue;
                 }
                 if (elevator.getSize() < minSize) {
@@ -25,5 +24,28 @@ public class JudgeDispatcher implements Dispatcher {
         }
 
         return minSize == 200 ? -1 : elevatorId;
+    }
+
+    private boolean continueSign(Person person, ElevatorThread elevator) {
+        if (elevator.getSize() >= 20) {
+            return true;
+        }
+        int transferFloor = elevator.getTransferFloor();
+        int fromFloor = person.getFromFloor();
+        if (elevator.isUpdated()) {
+            if (transferFloor > fromFloor && elevator.typeA()) {
+                return true;
+            }
+            if (transferFloor < fromFloor && elevator.typeB()) {
+                return true;
+            }
+            if (transferFloor == fromFloor) {
+                int toFloor = person.getToFloor();
+                return (elevator.typeB() && toFloor > transferFloor) ||
+                       (elevator.typeA() && toFloor < transferFloor);
+            }
+        }
+
+        return false;
     }
 }

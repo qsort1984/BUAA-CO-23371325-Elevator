@@ -13,8 +13,6 @@ public class LookStrategy implements Strategy {
     }
 
     public ElevatorState getNextState() {
-        // todo: 增加双轿厢升级状态
-        // todo: 考虑换乘楼层
         if (elevator.getUpdateStartSign() && !elevator.isUpdating()) {
             return updatePrepare();
         }

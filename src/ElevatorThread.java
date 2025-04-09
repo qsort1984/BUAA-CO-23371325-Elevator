@@ -3,14 +3,19 @@ import java.util.ArrayList;
 import com.oocourse.elevator3.TimableOutput;
 
 public class ElevatorThread extends Thread {
+    private enum Type {
+        A,
+        B
+    }
+
     //* 基本属性
     private final int id;
     private int currentFloor = 1;
     private int speed = 400; //* 400 ms/floor
     private TransferFloor transferFloor;
     private final Strategy strategy;
+    private Type type;
     //* 状态
-    // todo : 能用AtomicBoolean吗？
     private boolean isUp = true;
     private boolean isScheduling = false;
     private boolean isOpen = false;
@@ -260,6 +265,10 @@ public class ElevatorThread extends Thread {
         return currentPeople.size();
     }
 
+    public int getTransferFloor() {
+        return transferFloor.getFloor();
+    }
+
     public boolean hasArriveTransFloor() {
         return transferFloor.getFloor() == currentFloor;
     }
@@ -294,6 +303,22 @@ public class ElevatorThread extends Thread {
 
     public void setUpdateEndSign() {
         this.updateEndSign = true;
+    }
+
+    public void setTypeA() {
+        this.type = Type.A;
+    }
+
+    public void setTypeB() {
+        this.type = Type.B;
+    }
+
+    public boolean typeA() {
+        return type == Type.A;
+    }
+
+    public boolean typeB() {
+        return type == Type.B;
     }
 
     public boolean getUpdateEndSign() {
