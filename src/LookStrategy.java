@@ -18,7 +18,7 @@ public class LookStrategy implements Strategy {
         }
         if (elevator.isUpdating()) {
             boolean isUpdateEnd = elevator.getUpdateEndSign();
-            return isUpdateEnd ? ElevatorState.WAITING : ElevatorState.UPDATEEND;
+            return isUpdateEnd ? ElevatorState.UPDATEEND : ElevatorState.WAITING;
         }
 
         if (!tempSchedules.isEmpty()) {
@@ -142,20 +142,30 @@ public class LookStrategy implements Strategy {
 
     public ArrayList<Person> getOutPeople() {
         ArrayList<Person> outPeople = new ArrayList<>();
-        boolean isScheduling = elevator.isScheduling();
-        boolean isUpdating = elevator.isUpdating();
-        if (isScheduling || isUpdating) {
-            outPeople = new ArrayList<>(elevator.getCurrentPeople());
-        } else {
-            ArrayList<Person> curPeople = elevator.getCurrentPeople();
-            for (Person person : curPeople) {
-                if (person.getToFloor() == elevator.getCurrentFloor()) {
-                    outPeople.add(person);
-                }
+
+        if (elevator.isScheduling() || elevator.isUpdating()) {
+            return new ArrayList<>(elevator.getCurrentPeople());
+        }
+
+        int curFloor = elevator.getCurrentFloor();
+        ArrayList<Person> curPeople = elevator.getCurrentPeople();
+
+        for (Person person : curPeople) {
+            if (shouldPersonExit(person, curFloor)) {
+                outPeople.add(person);
             }
         }
 
         return outPeople;
+    }
+
+    private boolean shouldPersonExit(Person person, int curFloor) {
+        int toFloor = person.getToFloor();
+        if (!elevator.isUpdated() || !elevator.hasArriveTransFloor()) {
+            return toFloor == curFloor;
+        }
+
+        return elevator.typeA() ? toFloor <= curFloor : toFloor >= curFloor;
     }
 
     public ArrayList<Person> getInPeople() {

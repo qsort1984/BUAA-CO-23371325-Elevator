@@ -125,8 +125,8 @@ public class ScheduleThread extends Thread {
         int elevatorBId = update.getElevatorBId();
         Object updateLock = new Object();
         UpdateThread updateThread = new UpdateThread(update,
-            elevatorThreads.get(elevatorAId),
-            elevatorThreads.get(elevatorBId),
+            elevatorThreads.get(elevatorAId - 1),
+            elevatorThreads.get(elevatorBId - 1),
             locks.get(elevatorAId),
             locks.get(elevatorBId),
             updateLock);
