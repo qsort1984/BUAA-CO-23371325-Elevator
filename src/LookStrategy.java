@@ -22,13 +22,17 @@ public class LookStrategy implements Strategy {
             boolean isUpdateEnd = elevator.getUpdateEndSign();
             return isUpdateEnd ? ElevatorState.WAITING : ElevatorState.UPDATEEND;
         }
+
         if (!tempSchedules.isEmpty()) {
             return schedule();
         }
 
-        final int curNum = elevator.getCurrentNum();
-        final boolean isOpen = elevator.isOpen();
+        if (elevator.isUpdated() && elevator.hasArriveTransFloor()) {
+            return ElevatorState.TRANSFER;
+        }
 
+        int curNum = elevator.getCurrentNum();
+        boolean isOpen = elevator.isOpen();
 
         if (isOpen) {
             return canClose() ? ElevatorState.CLOSE : ElevatorState.WAITING;

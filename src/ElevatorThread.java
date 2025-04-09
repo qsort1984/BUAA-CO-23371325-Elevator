@@ -3,26 +3,31 @@ import java.util.ArrayList;
 import com.oocourse.elevator3.TimableOutput;
 
 public class ElevatorThread extends Thread {
+    //* 基本属性
     private final int id;
-    private final WaitQueue waitQueue;
-    private final ArrayList<TempSchedule> tempSchedules;
-    private final RequestQueue requestQueue;
-    private final Object lock;
-    private final Object sharedLock;
-    private boolean isUp = true;
     private int currentFloor = 1;
     private int speed = 400; //* 400 ms/floor
+    private TransferFloor transferFloor;
+    private final Strategy strategy;
+    //* 状态
+    // todo : 能用AtomicBoolean吗？
+    private boolean isUp = true;
     private boolean isScheduling = false;
     private boolean isOpen = false;
     private boolean updateStartSign = false;
     private boolean updateEndSign = false;
     private boolean isUpdating = false;
     private boolean isUpdated = false;
-    private volatile Object updateLock;
-    private TransferFloor transferFloor;
-    private final Strategy strategy;
+    //* 任务队列
+    private final WaitQueue waitQueue;
+    private final ArrayList<TempSchedule> tempSchedules;
+    private final RequestQueue requestQueue;
     private final ArrayList<Person> currentPeople = new ArrayList<>();
     private ArrayList<Person> pendingPeople = new ArrayList<>();
+    //* 锁
+    private final Object lock;
+    private final Object sharedLock;
+    private volatile Object updateLock;
     private final Object pendingLock = new Object();
 
     public ElevatorThread(int id, WaitQueue waitQueue, ArrayList<TempSchedule> tempSchedules,
@@ -98,6 +103,10 @@ public class ElevatorThread extends Thread {
             currentFloor--;
         }
 
+        if (isUpdated && hasArriveTransFloor()) {
+            transferFloor.setOccupied();
+        }
+
         TimableOutput.println("ARRIVE-" + floorToString() + "-" + id);
     }
 
@@ -161,16 +170,11 @@ public class ElevatorThread extends Thread {
     }
 
     private void transfer() {
-        // todo
-//        direction = doubleType != 'A';
-//        open();
-//        if (!currentPeople.isEmpty()) {
-//            outElevator();
-//        }
-//        inElevator();
-//        close();
-//        move();
-//        this.transferFloor.setEmpty();
+        open();
+        close();
+        reverse();
+        move();
+        transferFloor.setEmpty();
     }
 
     private void outElevator() {
@@ -256,8 +260,8 @@ public class ElevatorThread extends Thread {
         return currentPeople.size();
     }
 
-    public TransferFloor getTransferFloor() {
-        return transferFloor;
+    public boolean hasArriveTransFloor() {
+        return transferFloor.getFloor() == currentFloor;
     }
 
     public boolean isOpen() {
