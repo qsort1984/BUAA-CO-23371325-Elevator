@@ -22,6 +22,7 @@ public class ScheduleThread extends Thread {
         this.elevatorThreads = elevatorThreads;
         this.tempSchedules = tempSchedules;
         this.dispatcher = new JudgeDispatcher(elevatorThreads);
+        //* this.dispatcher = new GradeDispatcher(elevatorThreads);
         this.locks = locks;
         this.sharedLock = sharedLock;
     }

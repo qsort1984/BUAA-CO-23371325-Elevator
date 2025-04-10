@@ -175,9 +175,9 @@ public class ElevatorThread extends Thread {
     }
 
     private void transfer() {
+        reverse();
         open();
         close();
-        reverse();
         move();
         transferFloor.setEmpty();
     }
