@@ -9,6 +9,7 @@ public class JudgeDispatcher implements Dispatcher {
 
     public int dispatchElev(Person person) {
         // todo 调度策略如何优化
+        //* 或许可以考虑打分策略？综合考虑电梯乘客量加等待人数，当前位置，是否为双轿厢
         int elevatorId = 1;
         int minSize = 200; //* 乘客最多100人
         for (ElevatorThread elevator : elevatorThreads) {

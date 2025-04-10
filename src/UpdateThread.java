@@ -31,11 +31,13 @@ public class UpdateThread extends Thread {
             elevatorBThread.setUpdateStartSign();
             lockB.notifyAll();
         }
-        synchronized (updateLock) {
-            try {
-                updateLock.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        while (!elevatorAThread.isUpdating() || !elevatorBThread.isUpdating()) {
+            synchronized (updateLock) {
+                try {
+                    updateLock.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
