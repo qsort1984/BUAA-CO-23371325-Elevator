@@ -5,9 +5,9 @@ public interface Dispatcher {
         if (elevator.getSize() >= 20) {
             return true;
         }
-        int transferFloor = elevator.getTransferFloor();
         int fromFloor = person.getFromFloor();
         if (elevator.isUpdated()) {
+            int transferFloor = elevator.getTransferFloor();
             if (transferFloor > fromFloor && elevator.typeA()) {
                 return true;
             }
