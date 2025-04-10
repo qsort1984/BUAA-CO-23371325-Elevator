@@ -44,6 +44,14 @@ public class UpdateThread extends Thread {
         int elevatorAId = elevatorAThread.getElevatorId();
         int elevatorBId = elevatorBThread.getElevatorId();
         TimableOutput.println("UPDATE-BEGIN-" + elevatorAId + "-" + elevatorBId);
+        synchronized (lockA) {
+            elevatorAThread.setUpdateSign();
+            lockA.notifyAll();
+        }
+        synchronized (lockB) {
+            elevatorBThread.setUpdateSign();
+            lockB.notifyAll();
+        }
         synchronized (updateLock) {
             try {
                 sleep(1000);

@@ -17,6 +17,9 @@ public class LookStrategy implements Strategy {
             return updatePrepare();
         }
         if (elevator.isUpdating()) {
+            if (elevator.getUpdateSign()) {
+                return ElevatorState.UPDATE;
+            }
             boolean isUpdateEnd = elevator.getUpdateEndSign();
             return isUpdateEnd ? ElevatorState.UPDATEEND : ElevatorState.WAITING;
         }
@@ -56,7 +59,7 @@ public class LookStrategy implements Strategy {
         boolean isOpen = elevator.isOpen();
 
         if (curNum == 0) {
-            return isOpen ? ElevatorState.CLOSE : ElevatorState.UPDATE;
+            return isOpen ? ElevatorState.CLOSE : ElevatorState.PREPARED;
         } else {
             return ElevatorState.OPEN;
         }

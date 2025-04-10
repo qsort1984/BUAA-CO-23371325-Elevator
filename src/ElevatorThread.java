@@ -20,6 +20,7 @@ public class ElevatorThread extends Thread {
     private boolean isScheduling = false;
     private boolean isOpen = false;
     private boolean updateStartSign = false;
+    private boolean updateSign = false;
     private boolean updateEndSign = false;
     private boolean isUpdating = false;
     private boolean isUpdated = false;
@@ -64,6 +65,8 @@ public class ElevatorThread extends Thread {
                 waiting();
             } else if (state.equals(ElevatorState.SCHEDULE)) {
                 schedule();
+            } else if (state.equals(ElevatorState.PREPARED)) {
+                prepared();
             } else if (state.equals(ElevatorState.UPDATE)) {
                 upDate();
             } else if (state.equals(ElevatorState.UPDATEEND)) {
@@ -147,19 +150,23 @@ public class ElevatorThread extends Thread {
         }
     }
 
-    private void upDate() {
+    private void prepared() {
         synchronized (sharedLock) {
             updateStartSign = false;
             isUpdating = true;
-            synchronized (requestQueue) {
-                synchronized (pendingLock) {
-                    pendingPeople.addAll(waitQueue.clear());
-                    requestQueue.notifyAll();
-                }
-            }
             Object lock = this.updateLock;
             synchronized (lock) {
                 lock.notifyAll();
+            }
+        }
+    }
+
+    private void upDate() {
+        updateSign = false;
+        synchronized (requestQueue) {
+            synchronized (pendingLock) {
+                pendingPeople.addAll(waitQueue.clear());
+                requestQueue.notifyAll();
             }
         }
     }
@@ -301,8 +308,20 @@ public class ElevatorThread extends Thread {
         return updateStartSign;
     }
 
+    public void setUpdateSign() {
+        this.updateSign = true;
+    }
+
     public void setUpdateEndSign() {
         this.updateEndSign = true;
+    }
+
+    public boolean getUpdateSign() {
+        return updateSign;
+    }
+
+    public boolean getUpdateEndSign() {
+        return updateEndSign;
     }
 
     public void setTypeA() {
@@ -319,10 +338,6 @@ public class ElevatorThread extends Thread {
 
     public boolean typeB() {
         return type == Type.B;
-    }
-
-    public boolean getUpdateEndSign() {
-        return updateEndSign;
     }
 
     public ArrayList<Person> getCurrentPeople() {

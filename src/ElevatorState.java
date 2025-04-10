@@ -5,6 +5,7 @@ public enum ElevatorState {
     OPEN,
     CLOSE,
     SCHEDULE,
+    PREPARED,
     UPDATE,
     UPDATEEND,
     TRANSFER,
