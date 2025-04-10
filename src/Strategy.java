@@ -6,4 +6,8 @@ public interface Strategy {
     ArrayList<Person> getOutPeople();
 
     ArrayList<Person> getInPeople();
+
+    int getHighestFloor();
+
+    int getLowestFloor();
 }

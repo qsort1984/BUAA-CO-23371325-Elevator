@@ -116,7 +116,7 @@ public class LookStrategy implements Strategy {
         return isUp ? curFloor > getHighestFloor() : curFloor < getLowestFloor();
     }
 
-    private int getHighestFloor() {
+    public int getHighestFloor() {
         ArrayList<Person> curPeople = elevator.getCurrentPeople();
         int highestFloor = curPeople.size() >= 6 ? -3 : waitQueue.getHighestFloor();
         for (Person person : curPeople) {
@@ -128,7 +128,7 @@ public class LookStrategy implements Strategy {
         return highestFloor;
     }
 
-    private int getLowestFloor() {
+    public int getLowestFloor() {
         ArrayList<Person> curPeople = elevator.getCurrentPeople();
         int lowestFloor = curPeople.size() >= 6 ? 7 : waitQueue.getLowestFloor();
         for (Person person : curPeople) {

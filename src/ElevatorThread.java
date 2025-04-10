@@ -336,4 +336,52 @@ public class ElevatorThread extends Thread {
     public int getSize() {
         return currentPeople.size() + waitQueue.getSize();
     }
+
+    public int getScore(Person person) {
+        int moveTime = 0;
+        int speed = isUpdated ? 1 : 2;
+
+        int fromFloor = person.getFromFloor();
+        int toFloor = person.getToFloor();
+        boolean personUp = fromFloor < toFloor;
+        int floor;
+
+        if (isUp == personUp) {
+            if (isUp && currentFloor <= fromFloor || !isUp && currentFloor >= fromFloor) {
+                floor = Math.abs(currentFloor - fromFloor);
+            } else {
+                if (isUp) {
+                    floor = strategy.getHighestFloor() * 2 - currentFloor - fromFloor;
+                    if (strategy.getLowestFloor() < fromFloor) {
+                        floor += (fromFloor - strategy.getLowestFloor()) * 2;
+                    }
+                } else {
+                    floor = currentFloor + fromFloor - strategy.getLowestFloor() * 2;
+                    if (strategy.getHighestFloor() > fromFloor) {
+                        floor += (strategy.getHighestFloor() - fromFloor) * 2;
+                    }
+                }
+            }
+        } else {
+            floor = isUp ? strategy.getHighestFloor() * 2 - currentFloor - fromFloor :
+                           currentFloor + fromFloor - strategy.getLowestFloor() * 2;
+        }
+        moveTime += speed * floor;
+
+        if (personNeedTransfer(person)) {
+            moveTime += 2;
+        }
+
+        return 100 - moveTime;
+    }
+
+    private boolean personNeedTransfer(Person person) {
+        if (!isUpdated) {
+            return false;
+        }
+        int toFloor = person.getToFloor();
+
+        return typeA() && toFloor < transferFloor.getFloor() ||
+               typeB() && toFloor > transferFloor.getFloor();
+    }
 }
