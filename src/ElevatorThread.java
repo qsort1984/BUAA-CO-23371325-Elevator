@@ -370,25 +370,29 @@ public class ElevatorThread extends Thread {
         boolean personUp = fromFloor < toFloor;
         int floor;
 
-        if (isUp == personUp) {
-            if (isUp && currentFloor <= fromFloor || !isUp && currentFloor >= fromFloor) {
-                floor = Math.abs(currentFloor - fromFloor);
-            } else {
-                if (isUp) {
-                    floor = strategy.getHighestFloor() * 2 - currentFloor - fromFloor;
-                    if (strategy.getLowestFloor() < fromFloor) {
-                        floor += (fromFloor - strategy.getLowestFloor()) * 2;
-                    }
+        if (getSize() == 0) {
+            floor = Math.abs(currentFloor - fromFloor);
+        } else {
+            if (isUp == personUp) {
+                if (isUp && currentFloor <= fromFloor || !isUp && currentFloor >= fromFloor) {
+                    floor = Math.abs(currentFloor - fromFloor);
                 } else {
-                    floor = currentFloor + fromFloor - strategy.getLowestFloor() * 2;
-                    if (strategy.getHighestFloor() > fromFloor) {
-                        floor += (strategy.getHighestFloor() - fromFloor) * 2;
+                    if (isUp) {
+                        floor = strategy.getHighestFloor() * 2 - currentFloor - fromFloor;
+                        if (strategy.getLowestFloor() < fromFloor) {
+                            floor += (fromFloor - strategy.getLowestFloor()) * 2;
+                        }
+                    } else {
+                        floor = currentFloor + fromFloor - strategy.getLowestFloor() * 2;
+                        if (strategy.getHighestFloor() > fromFloor) {
+                            floor += (strategy.getHighestFloor() - fromFloor) * 2;
+                        }
                     }
                 }
+            } else {
+                floor = isUp ? strategy.getHighestFloor() * 2 - currentFloor - fromFloor :
+                        currentFloor + fromFloor - strategy.getLowestFloor() * 2;
             }
-        } else {
-            floor = isUp ? strategy.getHighestFloor() * 2 - currentFloor - fromFloor :
-                           currentFloor + fromFloor - strategy.getLowestFloor() * 2;
         }
         moveTime += speed * floor;
 
