@@ -146,7 +146,7 @@ public class LookStrategy implements Strategy {
     public ArrayList<Person> getOutPeople() {
         ArrayList<Person> outPeople = new ArrayList<>();
 
-        if (elevator.isScheduling() || elevator.isUpdating()) {
+        if (elevator.isScheduling() || elevator.getUpdateStartSign()) {
             return new ArrayList<>(elevator.getCurrentPeople());
         }
 

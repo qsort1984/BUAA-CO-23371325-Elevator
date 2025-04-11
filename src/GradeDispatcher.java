@@ -9,7 +9,7 @@ public class GradeDispatcher implements Dispatcher {
 
     public int dispatchElev(Person person) {
         int elevatorId = 1;
-        int maxScore = 0; //* 乘客最多100人
+        int maxScore = 0;
         for (ElevatorThread elevator : elevatorThreads) {
             if (!elevator.isScheduling() && !elevator.isUpdating()) {
                 if (elevatorNotAvailable(person, elevator)) {
