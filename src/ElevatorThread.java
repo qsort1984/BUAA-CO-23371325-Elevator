@@ -206,10 +206,10 @@ public class ElevatorThread extends Thread {
                         TimableOutput.println("OUT-F-" + p.getId() + "-" +
                             floorToString() + "-" + id);
                         p.setFromFloor(currentFloor);
-                        if (updateStartSign) {
-                            bufferPeople.add(p);
-                        } else {
-                            synchronized (pendingLock) {
+                        synchronized (pendingLock) {
+                            if (updateStartSign) {
+                                bufferPeople.add(p);
+                            } else {
                                 pendingPeople.add(p);
                             }
                         }
@@ -261,7 +261,8 @@ public class ElevatorThread extends Thread {
 
     public boolean isEmpty() {
         synchronized (pendingLock) {
-            return currentPeople.isEmpty() && pendingPeople.isEmpty() && waitQueue.isEmpty();
+            return currentPeople.isEmpty() && pendingPeople.isEmpty()
+                    && waitQueue.isEmpty() && bufferPeople.isEmpty();
         }
     }
 
