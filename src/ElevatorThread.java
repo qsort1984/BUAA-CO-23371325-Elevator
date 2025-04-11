@@ -368,30 +368,36 @@ public class ElevatorThread extends Thread {
         int fromFloor = person.getFromFloor();
         int toFloor = person.getToFloor();
         boolean personUp = fromFloor < toFloor;
+        int size = getSize();
         int floor;
 
-        if (getSize() == 0) {
+        if (size == 0) {
             floor = Math.abs(currentFloor - fromFloor);
         } else {
+            int highestFloor = strategy.getHighestFloor();
+            int lowestFloor = strategy.getLowestFloor();
             if (isUp == personUp) {
                 if (isUp && currentFloor <= fromFloor || !isUp && currentFloor >= fromFloor) {
                     floor = Math.abs(currentFloor - fromFloor);
                 } else {
                     if (isUp) {
-                        floor = strategy.getHighestFloor() * 2 - currentFloor - fromFloor;
-                        if (strategy.getLowestFloor() < fromFloor) {
-                            floor += (fromFloor - strategy.getLowestFloor()) * 2;
+                        floor = highestFloor * 2 - currentFloor - fromFloor;
+                        if (lowestFloor < fromFloor) {
+                            floor += (fromFloor - lowestFloor) * 2;
                         }
                     } else {
-                        floor = currentFloor + fromFloor - strategy.getLowestFloor() * 2;
-                        if (strategy.getHighestFloor() > fromFloor) {
-                            floor += (strategy.getHighestFloor() - fromFloor) * 2;
+                        floor = currentFloor + fromFloor - lowestFloor * 2;
+                        if (highestFloor > fromFloor) {
+                            floor += (highestFloor - fromFloor) * 2;
                         }
                     }
                 }
+                moveTime += 2 * expectedStops(size,highestFloor,lowestFloor);
             } else {
-                floor = isUp ? strategy.getHighestFloor() * 2 - currentFloor - fromFloor :
-                        currentFloor + fromFloor - strategy.getLowestFloor() * 2;
+                floor = isUp ? highestFloor * 2 - currentFloor - fromFloor :
+                               currentFloor + fromFloor - lowestFloor * 2;
+                moveTime += isUp ? 2 * expectedStops(size,highestFloor,fromFloor) :
+                                   2 * expectedStops(size,fromFloor,lowestFloor);
             }
         }
         moveTime += speed * floor;
@@ -401,6 +407,20 @@ public class ElevatorThread extends Thread {
         }
 
         return 100 - moveTime;
+    }
+
+    private int expectedStops(int x, int y, int z) {
+        int n = y - z + 1;
+        if (n == 1) {
+            return 1;
+        }
+
+        double invN = 1.0 / n;
+        double oneMinusInvN = 1 - invN;
+        double probNoStop = Math.pow(oneMinusInvN, x);
+        double expectedStops = n * (1 - probNoStop);
+
+        return (int) expectedStops;
     }
 
     private boolean personNeedTransfer(Person person) {
