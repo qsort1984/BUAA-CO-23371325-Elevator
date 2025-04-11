@@ -61,7 +61,7 @@ public class LookStrategy implements Strategy {
         if (curNum == 0) {
             return isOpen ? ElevatorState.CLOSE : ElevatorState.PREPARED;
         } else {
-            return ElevatorState.OPEN;
+            return isOpen ? ElevatorState.OUT : ElevatorState.OPEN;
         }
     }
 
@@ -175,7 +175,7 @@ public class LookStrategy implements Strategy {
         ArrayList<Person> inPeople = new ArrayList<>();
         boolean isScheduling = elevator.isScheduling();
         boolean isUpdating = elevator.isUpdating();
-        if (!isScheduling && !isUpdating) {
+        if (!isScheduling && !isUpdating && !elevator.getUpdateStartSign()) {
             inPeople = waitQueue.takeElev(elevator.getCurrentFloor(),
             6 - elevator.getCurrentNum(), elevator.isUp());
         }

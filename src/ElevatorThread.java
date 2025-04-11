@@ -30,6 +30,7 @@ public class ElevatorThread extends Thread {
     private final RequestQueue requestQueue;
     private final ArrayList<Person> currentPeople = new ArrayList<>();
     private ArrayList<Person> pendingPeople = new ArrayList<>();
+    private final ArrayList<Person> bufferPeople = new ArrayList<>();
     //* 锁
     private final Object lock;
     private final Object sharedLock;
@@ -65,6 +66,8 @@ public class ElevatorThread extends Thread {
                 waiting();
             } else if (state.equals(ElevatorState.SCHEDULE)) {
                 schedule();
+            } else if (state.equals(ElevatorState.OUT)) {
+                outElevator();
             } else if (state.equals(ElevatorState.PREPARED)) {
                 prepared();
             } else if (state.equals(ElevatorState.UPDATE)) {
@@ -165,6 +168,8 @@ public class ElevatorThread extends Thread {
         updateSign = false;
         synchronized (requestQueue) {
             synchronized (pendingLock) {
+                pendingPeople.addAll(bufferPeople);
+                bufferPeople.clear();
                 pendingPeople.addAll(waitQueue.clear());
                 requestQueue.notifyAll();
             }
@@ -201,8 +206,12 @@ public class ElevatorThread extends Thread {
                         TimableOutput.println("OUT-F-" + p.getId() + "-" +
                             floorToString() + "-" + id);
                         p.setFromFloor(currentFloor);
-                        synchronized (pendingLock) {
-                            pendingPeople.add(p);
+                        if (updateStartSign) {
+                            bufferPeople.add(p);
+                        } else {
+                            synchronized (pendingLock) {
+                                pendingPeople.add(p);
+                            }
                         }
                     }
                     currentPeople.remove(p);
