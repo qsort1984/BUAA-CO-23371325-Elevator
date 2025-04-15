@@ -31,8 +31,8 @@ public class UpdateThread extends Thread {
             elevatorBThread.setUpdateStartSign();
             lockB.notifyAll();
         }
-        while (!elevatorAThread.isUpdating() || !elevatorBThread.isUpdating()) {
-            synchronized (updateLock) {
+        synchronized (updateLock) {
+            while (!elevatorAThread.isUpdating() || !elevatorBThread.isUpdating()) {
                 try {
                     updateLock.wait();
                 } catch (InterruptedException e) {
