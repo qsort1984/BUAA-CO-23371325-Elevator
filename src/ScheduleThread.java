@@ -40,8 +40,8 @@ public class ScheduleThread extends Thread {
                 break;
             }
 
-            if (requestQueue.isEmpty() && (!elevatorAllEmpty() || !requestQueue.isEnd())) {
-                synchronized (requestQueue) {
+            synchronized (requestQueue) {
+                if (requestQueue.isEmpty() && (!elevatorAllEmpty() || !requestQueue.isEnd())) {
                     try {
                         requestQueue.wait();
                     } catch (InterruptedException e) {
