@@ -1,19 +1,24 @@
 public class MyQueue {
     private boolean isEnd;
+    private final Object endLock = new Object();
 
     public MyQueue() {
         isEnd = false;
     }
 
-    public synchronized void setEnd() {
-        isEnd = true;
-        if (this instanceof RequestQueue) {
-            notifyAll();
+    public void setEnd() {
+        synchronized (endLock) {
+            isEnd = true;
+            if (this instanceof RequestQueue) {
+                notifyAll();
+            }
         }
     }
 
-    public synchronized boolean isEnd() {
-        return isEnd;
+    public boolean isEnd() {
+        synchronized (endLock) {
+            return isEnd;
+        }
     }
 
     public synchronized boolean isEmpty() {
