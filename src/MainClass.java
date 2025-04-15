@@ -15,7 +15,6 @@ public class MainClass {
         HashMap<Integer,Object> locks = new HashMap<>();
         ArrayList<ElevatorThread> elevatorThreads = new ArrayList<>();
         Object sharedLock = new Object();
-        Object requestLock = new Object();
         for (int i = 1; i <= 6; i++) {
             WaitQueue waitQueue = new WaitQueue();
             waitQueues.put(i, waitQueue);
@@ -29,9 +28,9 @@ public class MainClass {
                 i,
                 waitQueue,
                 tempSchedule,
+                requestQueue,
                 lock,
-                sharedLock,
-                requestQueue);
+                sharedLock);
             elevatorThreads.add(elevatorThread);
             elevatorThread.start();
         }
@@ -42,8 +41,7 @@ public class MainClass {
             elevatorThreads,
             tempSchedules,
             locks,
-            sharedLock,
-            requestLock);
+            sharedLock);
 
         scheduleThread.start();
         inputThread.start();

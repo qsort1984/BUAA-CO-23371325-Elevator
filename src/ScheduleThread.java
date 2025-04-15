@@ -10,15 +10,13 @@ public class ScheduleThread extends Thread {
     private final HashMap<Integer,ArrayList<TempSchedule>> tempSchedules;
     private final HashMap<Integer,Object> locks;
     private final Object sharedLock;
-    private final Object requestLock;
     private final Dispatcher dispatcher;
 
     public ScheduleThread(RequestQueue requestQueue, HashMap<Integer,WaitQueue> waitQueues,
         ArrayList<ElevatorThread> elevatorThreads,
         HashMap<Integer, ArrayList<TempSchedule>> tempSchedules,
         HashMap<Integer,Object> locks,
-        Object sharedLock,
-        Object requestLock) {
+        Object sharedLock) {
         this.requestQueue = requestQueue;
         this.waitQueues = waitQueues;
         this.elevatorThreads = elevatorThreads;
@@ -27,7 +25,6 @@ public class ScheduleThread extends Thread {
         this.dispatcher = new GradeDispatcher(elevatorThreads);
         this.locks = locks;
         this.sharedLock = sharedLock;
-        this.requestLock = requestLock;
     }
 
     @Override
@@ -44,9 +41,9 @@ public class ScheduleThread extends Thread {
             }
 
             if (requestQueue.isEmpty() && (!elevatorAllEmpty() || !requestQueue.isEnd())) {
-                synchronized (requestLock) {
+                synchronized (requestQueue) {
                     try {
-                        requestLock.wait();
+                        requestQueue.wait();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

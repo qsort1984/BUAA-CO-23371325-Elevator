@@ -27,24 +27,24 @@ public class ElevatorThread extends Thread {
     //* 任务队列
     private final WaitQueue waitQueue;
     private final ArrayList<TempSchedule> tempSchedules;
+    private final RequestQueue requestQueue;
     private final ArrayList<Person> currentPeople = new ArrayList<>();
     private ArrayList<Person> pendingPeople = new ArrayList<>();
     private final ArrayList<Person> bufferPeople = new ArrayList<>();
     //* 锁
     private final Object lock;
     private final Object sharedLock;
-    private final Object requestLock;
     private volatile Object updateLock;
     private final Object pendingLock = new Object();
 
     public ElevatorThread(int id, WaitQueue waitQueue, ArrayList<TempSchedule> tempSchedules,
-        Object lock, Object sharedLock, Object requestLock) {
+                          RequestQueue requestQueue, Object lock, Object sharedLock) {
         this.id = id;
         this.waitQueue = waitQueue;
         this.tempSchedules = tempSchedules;
+        this.requestQueue = requestQueue;
         this.lock = lock;
         this.sharedLock = sharedLock;
-        this.requestLock = requestLock;
         strategy = new LookStrategy(this, waitQueue, tempSchedules);
     }
 
@@ -91,10 +91,10 @@ public class ElevatorThread extends Thread {
         synchronized (sharedLock) {
             isScheduling = true;
             speed = tempSchedules.get(0).getTempSpeed();
-            synchronized (requestLock) {
+            synchronized (requestQueue) {
                 synchronized (pendingLock) {
                     pendingPeople.addAll(waitQueue.clear());
-                    requestLock.notifyAll();
+                    requestQueue.notifyAll();
                 }
             }
             TimableOutput.println("SCHE-BEGIN-" + id);
@@ -166,12 +166,12 @@ public class ElevatorThread extends Thread {
 
     private void upDate() {
         updateSign = false;
-        synchronized (requestLock) {
+        synchronized (requestQueue) {
             synchronized (pendingLock) {
                 pendingPeople.addAll(bufferPeople);
                 bufferPeople.clear();
                 pendingPeople.addAll(waitQueue.clear());
-                requestLock.notifyAll();
+                requestQueue.notifyAll();
             }
         }
     }
@@ -197,7 +197,7 @@ public class ElevatorThread extends Thread {
     private void outElevator() {
         ArrayList<Person> outPeople = strategy.getOutPeople();
         if (!outPeople.isEmpty()) {
-            synchronized (requestLock) {
+            synchronized (requestQueue) {
                 for (Person p : outPeople) {
                     if (p.getToFloor() == currentFloor) {
                         TimableOutput.println("OUT-S-" + p.getId() + "-" +
@@ -216,7 +216,7 @@ public class ElevatorThread extends Thread {
                     }
                     currentPeople.remove(p);
                 }
-                requestLock.notifyAll();
+                requestQueue.notifyAll();
             }
         }
     }
