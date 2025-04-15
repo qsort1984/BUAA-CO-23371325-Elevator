@@ -40,7 +40,7 @@ public class ScheduleThread extends Thread {
                 break;
             }
 
-            if (requestQueue.isEmpty() && (!elevatorAllEmpty() || !requestQueue.isEnd())) {
+            if (requestQueue.isEmpty() && (!requestQueue.isEnd()) || !elevatorAllEmpty()) {
                 synchronized (requestQueue) {
                     try {
                         requestQueue.wait();
