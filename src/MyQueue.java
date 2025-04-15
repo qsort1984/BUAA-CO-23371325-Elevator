@@ -10,7 +10,7 @@ public class MyQueue {
         synchronized (endLock) {
             isEnd = true;
             if (this instanceof RequestQueue) {
-                notifyAll();
+                endLock.notifyAll();
             }
         }
     }

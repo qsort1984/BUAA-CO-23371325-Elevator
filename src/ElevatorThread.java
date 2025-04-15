@@ -38,7 +38,7 @@ public class ElevatorThread extends Thread {
     private final Object pendingLock = new Object();
 
     public ElevatorThread(int id, WaitQueue waitQueue, ArrayList<TempSchedule> tempSchedules,
-                          RequestQueue requestQueue, Object lock, Object sharedLock) {
+        RequestQueue requestQueue, Object lock, Object sharedLock) {
         this.id = id;
         this.waitQueue = waitQueue;
         this.tempSchedules = tempSchedules;
